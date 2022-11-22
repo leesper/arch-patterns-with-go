@@ -2,10 +2,12 @@ package main
 
 import (
 	"testing"
+
+	"github.com/leesper/arch-patterns-with-go/model"
 )
 
-func makeBatchAndOrderLine(sku string, batchQuantity, lineQuantity int) (*Batch, OrderLine) {
-	return NewBatch("batch1", sku, batchQuantity, etaNone), OrderLine{"order1", sku, lineQuantity}
+func makeBatchAndOrderLine(sku string, batchQuantity, lineQuantity int) (*model.Batch, model.OrderLine) {
+	return model.NewBatch("batch1", sku, batchQuantity, model.EtaNone), model.OrderLine{"order1", sku, lineQuantity}
 }
 
 func TestAllocatingToABatchReducesAvailableQuantity(t *testing.T) {
@@ -37,8 +39,8 @@ func TestCannotAllocateIfAvailableLessThanRequired(t *testing.T) {
 }
 
 func TestCannotAllocateIfSkuNotMatch(t *testing.T) {
-	batch := NewBatch("batch1", "BLUE-VASE", 10, etaNone)
-	diffOrderLine := OrderLine{"order123", "BLUE-CUSHION", 2}
+	batch := model.NewBatch("batch1", "BLUE-VASE", 10, model.EtaNone)
+	diffOrderLine := model.OrderLine{"order123", "BLUE-CUSHION", 2}
 	if batch.CanAllocate(diffOrderLine) {
 		t.Fatalf("batch.CanAllocate(%v) == %t, want %t", diffOrderLine, true, false)
 	}
@@ -62,8 +64,8 @@ func TestCanOnlyDeallocateAllocatedLines(t *testing.T) {
 }
 
 func TestBatchEqualityCanOnlyBasedOnReference(t *testing.T) {
-	batch1 := NewBatch("batch1", "BLUE-VASE", 10, etaNone)
-	batch2 := NewBatch("batch1", "BLUE-CUSHION", 2, etaNone)
+	batch1 := model.NewBatch("batch1", "BLUE-VASE", 10, model.EtaNone)
+	batch2 := model.NewBatch("batch1", "BLUE-CUSHION", 2, model.EtaNone)
 
 	if !batch1.Equals(batch2) {
 		t.Fatalf("batch1.Equals(batch2) == %t, want %t", batch1.Equals(batch2), true)
@@ -71,8 +73,8 @@ func TestBatchEqualityCanOnlyBasedOnReference(t *testing.T) {
 }
 
 func TestBatchHashEqualToAnotherWithSameReference(t *testing.T) {
-	batch1 := NewBatch("batch1", "BLUE-VASE", 10, etaNone)
-	batch2 := NewBatch("batch1", "BLUE-CUSHION", 2, etaNone)
+	batch1 := model.NewBatch("batch1", "BLUE-VASE", 10, model.EtaNone)
+	batch2 := model.NewBatch("batch1", "BLUE-CUSHION", 2, model.EtaNone)
 	if batch1.Hash() != batch2.Hash() {
 		t.Fatalf("batch1.Hash() == %s, want %s", batch1.Hash(), batch2.Hash())
 	}
