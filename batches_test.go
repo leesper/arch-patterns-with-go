@@ -7,7 +7,7 @@ import (
 )
 
 func makeBatchAndOrderLine(sku string, batchQuantity, lineQuantity int) (*model.Batch, model.OrderLine) {
-	return model.NewBatch("batch1", sku, batchQuantity, model.EtaNone), model.OrderLine{"order1", sku, lineQuantity}
+	return model.NewBatch("batch1", sku, batchQuantity, model.EtaNone), model.OrderLine{OrderID: "order1", Sku: sku, Quantity: lineQuantity}
 }
 
 func TestAllocatingToABatchReducesAvailableQuantity(t *testing.T) {
@@ -40,7 +40,7 @@ func TestCannotAllocateIfAvailableLessThanRequired(t *testing.T) {
 
 func TestCannotAllocateIfSkuNotMatch(t *testing.T) {
 	batch := model.NewBatch("batch1", "BLUE-VASE", 10, model.EtaNone)
-	diffOrderLine := model.OrderLine{"order123", "BLUE-CUSHION", 2}
+	diffOrderLine := model.OrderLine{OrderID: "order123", Sku: "BLUE-CUSHION", Quantity: 2}
 	if batch.CanAllocate(diffOrderLine) {
 		t.Fatalf("batch.CanAllocate(%v) == %t, want %t", diffOrderLine, true, false)
 	}

@@ -11,7 +11,7 @@ func TestPreferBatchesInWarehouseRatherThanShipments(t *testing.T) {
 	batchInStock := model.NewBatch("batch1", "BLUE-VASE", 10, model.EtaNone)
 	now := time.Now()
 	batchOnShip := model.NewBatch("batch2", "BLUE-VASE", 10, now)
-	orderLine := model.OrderLine{"oref", "BLUE-VASE", 2}
+	orderLine := model.OrderLine{OrderID: "oref", Sku: "BLUE-VASE", Quantity: 2}
 	model.Allocate([]*model.Batch{batchInStock, batchOnShip}, orderLine)
 	if batchInStock.AvailableQuantity() != 8 {
 		t.Fatalf("batchInStock.AvailableQuantity() == %d, want %d", batchInStock.AvailableQuantity(), 8)
@@ -27,7 +27,7 @@ func TestPreferEarliestBatches(t *testing.T) {
 	batch1 := model.NewBatch("batch1", "BLUE-VASE", 10, theDayBefore)
 	batch2 := model.NewBatch("batch2", "BLUE-VASE", 10, current)
 	batch3 := model.NewBatch("batch3", "BLUE-VASE", 10, theDayAfter)
-	orderLine := model.OrderLine{"oref", "BLUE-VASE", 2}
+	orderLine := model.OrderLine{OrderID: "oref", Sku: "BLUE-VASE", Quantity: 2}
 	model.Allocate([]*model.Batch{batch1, batch2, batch3}, orderLine)
 
 	if batch1.AvailableQuantity() != 8 {
@@ -46,7 +46,7 @@ func TestPreferEarliestBatches(t *testing.T) {
 func TestReturnsAllocatedBatchRef(t *testing.T) {
 	batchInStock := model.NewBatch("batch1", "BLUE-VASE", 10, model.EtaNone)
 	batchOnShip := model.NewBatch("batch2", "BLUE-VASE", 10, time.Now())
-	orderLine := model.OrderLine{"oref", "BLUE-VASE", 2}
+	orderLine := model.OrderLine{OrderID: "oref", Sku: "BLUE-VASE", Quantity: 2}
 	batchRef, _ := model.Allocate([]*model.Batch{batchInStock, batchOnShip}, orderLine)
 	if batchInStock.Reference != batchRef {
 		t.Fatalf("batchInStock.reference == %s, want %s", batchInStock.Reference, batchRef)
@@ -55,10 +55,10 @@ func TestReturnsAllocatedBatchRef(t *testing.T) {
 
 func TestReturnOutOfStockErrIfCannotAllocate(t *testing.T) {
 	batch := model.NewBatch("batch2", "BLUE-VASE", 10, time.Now())
-	line := model.OrderLine{"oref", "BLUE-VASE", 10}
+	line := model.OrderLine{OrderID: "oref", Sku: "BLUE-VASE", Quantity: 10}
 	model.Allocate([]*model.Batch{batch}, line)
 
-	_, err := model.Allocate([]*model.Batch{batch}, model.OrderLine{"oref", "BLUE-VASE", 2})
+	_, err := model.Allocate([]*model.Batch{batch}, model.OrderLine{OrderID: "oref", Sku: "BLUE-VASE", Quantity: 2})
 	e, ok := err.(*model.OutOfStockErr)
 	if !ok {
 		t.Fatalf("allocate() returns error %T, want %T", e, &model.OutOfStockErr{})
