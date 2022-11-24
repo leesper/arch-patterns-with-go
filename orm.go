@@ -7,25 +7,17 @@ import (
 )
 
 // TODO: 创建batch和orderline的数据库记录表，并建立它们之间one-to-many的关系
-type BatchRecord struct {
-	ID                uint
+type Batch struct {
+	ID                uint `gorm:"primaryKey;autoIncrement:true"`
 	Reference         string
 	Sku               string
 	PurchasedQuantity int
 	Eta               time.Time
-	Allocations       []model.OrderLine
+	Allocations       []OrderLine
 }
 
-func (BatchRecord) TableName() string {
-	return "batches"
-}
-
-type OrderLineRecord struct {
-	ID            uint
-	BatchRecordID uint
+type OrderLine struct {
+	ID      uint `gorm:"primaryKey;autoIncrement:true"`
+	BatchID uint
 	model.OrderLine
-}
-
-func (OrderLineRecord) TableName() string {
-	return "order_lines"
 }
